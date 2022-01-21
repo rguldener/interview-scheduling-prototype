@@ -1,17 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Nango interview scheduler</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <script src=""></script>
-<body>
-    <div class="py-4">
-        <img src="https://uploads-ssl.webflow.com/6194fa0928619c28c6b2ff43/619e473cfe0b49ebf6d72cb6_nango-logo-full-alt-palette.svg" class="d-block mx-auto mb-4">
-        <h1>Nango interview scheduler</h1>
-        
-    </div>
-    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script>
+        function submitForm () {
+            const magic = "YzI5ZjU0MTYyNmVhYjA3ODgzYmY0ZWQ5NzFjMWVkMTYtZWY4MDA1NGEtZDk5Yjg1ZWE=";
 
+            // Split emails into array
+            const recipients = document.getElementById('recipientEmails').value.replace(/\s/g, '').split(',');
+
+            // Get e-mail data
+            const senderName = document.getElementById('senderName').value;
+            const subject = document.getElementById('emailSubject').value;
+            const msg = document.getElementById('emailBody').value;
+
+            for (const recipient of recipients) {
+                $.ajax({
+                    method: "POST",
+                    async: false,
+                    url:"https://api.mailgun.net/v3/mg.getnango.com/messages",
+                    headers: {
+                        "Authorization": "Basic " + btoa("api" + ":" + atob(magic))
+                    },
+                    data: {
+                        from: senderName+"<hello@getnango.com>",
+                        to: recipient,
+                        subject: subject,
+                        text: msg
+                    }
+                });
+            }
+
+            $('#successMessage').show();
+
+            return false;
+        }
+
+    </script>
+<body>
+    <div class="py-4 text-center">
+        <img src="https://uploads-ssl.webflow.com/6194fa0928619c28c6b2ff43/619e473cfe0b49ebf6d72cb6_nango-logo-full-alt-palette.svg" class="d-block mx-auto mb-4" style="width: 250px;">
+        <h1 class="mb-4">Nango interview scheduler</h1>
+        <p>Thank you for trying Nango! Please report feedback to us at <a href="mailto:hello@getnango.com">hello@getnango.com</a>, we are looking forward to hearing your thoughts!</p>
+    </div>
+
+    <div class="container col-8">
+        <div class="row">
+            <form onsubmit="return submitForm()">
+                <h2 class="mb-3">Let's talk people</h2>
+                <div class="mb-3">
+                  <label for="senderName" class="form-label">Your name</label>
+                  <input type="text" class="form-control" id="senderName" aria-describedby="senderNameHelp" required>
+                  <div id="senderNameHelp" class="form-text">This is the sender your users will see in their e-mail inboxes</div>
+                </div>
+                <div class="mb-3">
+                  <label for="recipientEmails" class="form-label">Recipient's e-mail adresses</label>
+                  <input type="text" class="form-control" id="recipientEmails" required>
+                  <div id="recipientEmailsHelp" class="form-text">Comma separated list of recipient e-mail adresses, e.g. hello@email1.com, blubb@email2.com</div>
+                </div>
+                <h2 class="mb-3" style="margin-top: 4rem;">The invite for the interview scheduling</h2>
+                <div class="mb-3">
+                    <label for="emailSubject" class="form-label">Subject line</label>
+                    <input type="text" class="form-control" id="emailSubject" value="15min for a better [insert product name here]" required>
+                </div>
+                <div class="mb-3">
+                    <label for="emailBody" class="form-label">E-mail message, feel free to customize</label>
+                    <textarea class="form-control" id="emailBody" rows="6" required>Hello,
+
+My name is [insert your name here], I am a product manager at [insert company or product name here].
+I am reaching out to you because I am running a brief interview series with some of our customers to learn how we can improve [name of your product] for you. It just takes 15 minutes but helps us build a better [product name here] for you.
+
+Feel free to pick a date from my calendar here that works well for you: [insert calendly link here]
+Otherwise feel free to email me your preferred date and time and I will free up my calendar if at all possible.
+
+I am looking forward to talking to you and wish you a great day!
+
+Best,
+[your name here]</textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Schedule interviews</button>
+            </form>
+        </div>
+
+        <div class="alert alert-success" style="margin-top: 2.5rem; display: none;" id="successMessage">
+            <h3>Great success 🎉</h3>
+            <p>Congrats, your messages are on the way!</p>
+        </div>
+    </div>
+
+    <p class="text-center mb-4" style="margin-top: 5rem;">&copy Nango 2022. Made with ❤️ in Europe.</p>
+    
 </body>
 </html>
